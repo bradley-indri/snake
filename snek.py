@@ -1,61 +1,14 @@
 import pygame
-from enum import Enum
-
-class Direction(Enum):
-  UP = 0
-  DOWN = 1
-  LEFT = 2
-  RIGHT = 3
-
-class Snake:
-  length = 3
-  direction = Direction.DOWN
-  body = [(20,20),(20,40),(20,60)]
-  block_size = 20
-  color = (255,0,0)
-
-  def __init__(self, block_size):
-    self.block_size = block_size
-
-  def move(self):
-    curr_head = self.body[-1]
-    if self.direction == Direction.DOWN:
-      next_head = (curr_head[0], curr_head[1] + self.block_size)
-      self.body.append(next_head)
-    elif self.direction == Direction.UP:
-      next_head = (curr_head[0], curr_head[1] - self.block_size)
-      self.body.append(next_head)
-    elif self.direction == Direction.RIGHT:
-      next_head = (curr_head[0] + self.block_size, curr_head[1])
-      self.body.append(next_head)
-    elif self.direction == Direction.LEFT:
-      next_head = (curr_head[0] - self.block_size, curr_head[1])
-      self.body.append(next_head)
-
-    if self.length < len(self.body):
-      self.body.pop(0)
-  # end move method
-
-  def eat(self):
-    self.length += 1
-
-  def draw(self, game):
-
-    for segment in self.body:
-      pygame.draw.rect(win, self.color, (segment[0],segment[1],self.block_size, self.block_size))
-
-  def steer(self, direction):
-    self.direction = direction
-
+from food import Food
+from snake import * 
 
 # Game loop
-
 pygame.init()
-win = pygame.display.set_mode((800,600))
+window = pygame.display.set_mode((300,300))
 pygame.display.set_caption("Snek gmae")
 block_size = 20
 snek = Snake(block_size)
-
+food = Food(block_size,(window.get_width(), window.get_height()))
 
 run = True
 while run:
@@ -78,8 +31,10 @@ while run:
     snek.eat()
 
   snek.move()
-  win.fill((0,0,0))
-  snek.draw(pygame)
+  snek.check_for_food(food)
+  window.fill((0,0,0))
+  snek.draw(pygame, window)
+  food.draw(pygame, window)
   pygame.display.update()
 # end while loop
 
